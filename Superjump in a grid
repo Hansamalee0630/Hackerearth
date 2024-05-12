@@ -1,0 +1,79 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define MOD 1000000007
+
+int main() {
+    int r, c; // Declaring variables
+    
+    printf("Input the value for Rows : "); // User prompts for rows
+    scanf("%d", &r);
+    
+    printf("Input the value for Columns : "); // User prompts for olumns
+    scanf("%d", &c);
+    
+    
+    char arr[r][c + 1];
+
+    printf("Input Matrix : \n");
+    for (int i = 0; i < r; i++) {
+        for (int j = 0; j < c; j++) {
+            scanf(" %c", &arr[i][j]);
+            // Check if the input is not '0' or '1'
+            if (arr[i][j] != '0' && arr[i][j] != '1') {
+                printf("Invalid input. Only '0' or '1' allowed. Try again.\n");
+                j--;
+                continue;
+            }
+        }
+    }
+
+
+    if (arr[r - 1][c - 1] == '1' || arr[0][0] == '1') {
+        printf("No. of paths : 0\n");
+        return 0;
+    }
+
+    long long dp[r][c]; //Declaring new 2D array named dp
+    
+    //Initializing dp array
+    for (int i = 0; i < r; i++){
+        for (int j = 0; j < c; j++){
+            dp[i][j] = 0;
+        }
+    }
+    
+    dp[r - 1][c - 1] = 1;
+    int lastCol[c], lastRow[r]; 
+    
+    for (int i = 0; i < c; i++){
+        lastCol[i] = -1;
+    }
+    
+    for (int i = 0; i < r; i++){
+        lastRow[i] = -1;
+    }
+    
+    for (int row = r - 1; row >= 0; row--) {
+        for (int col = c - 1; col >= 0; col--) {
+            if (arr[row][col] == '1')
+                continue;
+            if (lastCol[col] != -1)
+                dp[row][col] = (dp[row][col] % MOD + dp[lastCol[col]][col] % MOD) % MOD;
+            if (lastRow[row] != -1)
+                dp[row][col] = (dp[row][col] % MOD + dp[row][lastRow[row]] % MOD) % MOD;
+            lastCol[col] = row;
+            lastRow[row] = col;
+        }
+    }
+
+    //If the desination is blocked
+    if (arr[r - 1][c - 1] == '1') { 
+        dp[r - 1][c - 1] = 2; 
+        printf("%lld\n", dp[r - 1][c - 1]);
+        return 0;
+    }
+
+    printf("\nNo. of paths : ");
+    printf("%lld\n", dp[0][0]);
+    return 0;
+}
